@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 180 Project 3</title>
+</head>
+<body style="font-family: Verdana;">
+    <center><h1>CS 180 Project 3 - Geoffrey Xiang</h1></center>
+    <h2>Part 1: Defining Correspondencies</h2>
+    <p>
+	To begin morphing images, we need to first define corresponding points across the two images. Using <a href="https://cal-cs180.github.io/fa23/hw/proj3/tool.html">this tool</a>, I manually selected corresponding points in the same order across two images. I used key facial features such as the eyes, nose, and mouth in order to base my correspondences. 
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang2.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/geoxiang2_points.jpg"/>
+	    <figcaption>Geoffrey with points</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/vincent_points.jpg"/>
+	    <figcaption>Vincent with points</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/vincent.jpg"/>
+	    <figcaption>Vincent</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/geoxiang_points.jpg"/>
+	    <figcaption>Geoffrey with points</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/sadie_points.jpg"/>
+	    <figcaption>Sadie with points</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/sadie.jpg"/>
+	    <figcaption>Sadie</figcaption>
+	</figure>
+    </div>
+    <h2>Part 2: Computing the "Mid-Way Face"</h2>
+    <p>
+	We can now create midway faces! Using the labeled correspondence points, I ran the Delaunay algorithm to create triangular regions.</p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang2.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/geoxiang2_triangles.jpg"/>
+	    <figcaption>Geoffrey with triangles</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/vincent_triangles.jpg"/>
+	    <figcaption>Vincent with triangles</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/vincent.jpg"/>
+	    <figcaption>Vincent</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/geoxiang_triangles.jpg"/>
+	    <figcaption>Geoffrey with triangles</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/1/sadie_triangles.jpg"/>
+	    <figcaption>Sadie with triangles</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/sadie.jpg"/>
+	    <figcaption>Sadie</figcaption>
+	</figure>
+    </div>
+    <p>
+	We can now use the triangles to create midway faces! We first warp the face shape to an average shape. This involves averaging the correspondence points across both images, then computing a triangulation for the average points. This enables us to compute a transformation matrix between the average shape and the shapes of both images. Using this transformation matrix to inverse warp color values from each of the two source images, we can then average the two values per pixel in order to cross-dissolve the images.
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang2.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/2/vincent+geoxiang2.jpg"/>
+	    <figcaption>Gincent</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/vincent.jpg"/>
+	    <figcaption>Vincent</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/2/geoxiang+sadie.jpg"/>
+	    <figcaption>Gadie</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/sadie.jpg"/>
+	    <figcaption>Sadie</figcaption>
+	</figure>
+    </div>
+    <p>
+	There are some pretty noticeable differences between each of the two images. Relative to me (Geoffrey), Vincent's mouth is more open (less teeth), and his eyes are tilted upwards. Sadie has long hair. These differences lead to slight discrepencies in the midway images that may not look super natural. The majority of the features across the faces do seem to be properly morphed together though! I got a slightly more natural-looking result from these two EECS faculty members:
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/abbeel.jpg">
+	    <figcaption>Abbeel</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/2/abbeel+arcak.jpg"/>
+	    <figcaption>Abbak</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/arcak.jpg"/>
+	    <figcaption>Arcak</figcaption>
+	</figure>
+    </div>
+    <h2>Part 3: The Morph Sequence</h2>
+    <p>
+	With a very similar process used to compute midway faces, we can now create a morph animation between two faces! Instead of one average image, we now make 50 intermediate images, each warping and cross-dissolving an incremental amount between the two images. The results use 1/50 increments for warping and cross-dissolve, leading to 50 frames. This creates a seamless transition between each source image to destination image.
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang2.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/3/vincent_to_geoxiang2.gif"/>
+	    <figcaption>Gincent</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/vincent.jpg"/>
+	    <figcaption>Vincent</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/sadie.jpg"/>
+	    <figcaption>Sadie</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/3/geoxiang_to_sadie.gif"/>
+	    <figcaption>Gadie</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/geoxiang.jpg">
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/arcak.jpg"/>
+	    <figcaption>Arcak</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/3/abbeel_to_arcak.gif"/>
+	    <figcaption>Abbak</figcaption>
+	</figure>
+
+	<figure>
+	    <img src="assets/abbeel.jpg">
+	    <figcaption>Abbeel</figcaption>
+	</figure>
+    </div>
+    <h2>Part 4: The "Mean Face" of a Population</h2>
+    <p>
+	Now, given a large amount of labeled faces from a popuation, we can get the average face. Similar to part 2 when we computed the midway face between two images, we can scale this process for hundreds of images. We first find the average set of points to compute Delaunay triangles, then warp each image's triangluation to the average triangulation we just computed. Then using the same inverse warping process to extract pixel values from each of the hundreds of images, we can average all of those values per pixel to get the "mean face" of the population! I used the <a href="https://fei.edu.br/~cet/facedatabase.html">FEI dataset</a> to compute the average face and separated the population into smiling and neutral expressions. We can see that the area around the faces is pretty blurry, likely due to how the images have greatly varying backgrounds and details outside the facial region. 
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/4/fei_average_im_neutral.jpg"/>
+	    <figcaption>Average Neutral Face</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/fei_average_im_smiling.jpg"/>
+	    <figcaption>Average Smiling Face</figcaption>
+	</figure>
+    </div>
+    <p>
+	Taking a closer look at individual images within the datset, we can warp an image to the average facial expression for the corresponding subpopulation. Keep in mind the average of all of the warped faces led us to our "mean faces" earlier. 
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/2a.jpg"/>
+	    <figcaption>Original Neutral</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/2a_warped_to_avg.jpg"/>
+	    <figcaption>Warped to Average Neutral</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/2b.jpg"/>
+	    <figcaption>Original Smile</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/2b_warped_to_avg.jpg"/>
+	    <figcaption>Warped to Average Smile</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/48a.jpg"/>
+	    <figcaption>Original Neutral</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/48a_warped_to_avg.jpg"/>
+	    <figcaption>Warped to Average Neutral</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/48b.jpg"/>
+	    <figcaption>Original Smile</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/48b_warped_to_avg.jpg"/>
+	    <figcaption>Warped to Average Smile</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/108a.jpg"/>
+	    <figcaption>Original Neutral</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/108a_warped_to_avg.jpg"/>
+	    <figcaption>Warped to Average Neutral</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/108b.jpg"/>
+	    <figcaption>Original Smile</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/108b_warped_to_avg.jpg"/>
+	    <figcaption>Warped to Average Smile</figcaption>
+	</figure>
+    </div>
+    <p>
+	We can go even further with this and morph my own face with the average face of the FEI dataset. Since I'm smiling in my photo, I chose to morph with the smiling subpopulation. These are the results of morphing my face to the average smile, and morphing the average smile to my face. 
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang3.jpg"/>
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/geoxiang_to_fei.jpg"/>
+	    <figcaption>Geoffrey as Average Smile</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/4/fei_average_im_smiling.jpg"/>
+	    <figcaption>Average Smile</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/fei_to_geoxiang.jpg"/>
+	    <figcaption>Average Smile as Geoffrey</figcaption>
+	</figure>
+    </div>
+    <h2>Part 5: Caricatures: Extrapolating from the Mean</h2>
+    <p>
+	Again using the FEI dataset mean faces, we can produce caricatures through extrapolation. By giving the correlation points in my image a weight of 1.5 and the correlation points in the average FEI smile a weight of -0.5, I can warp my face into an image that more heavily accentuates the features of my face compared to the FEI dataset smiles. Since the dataset is composed to Brazilian faces and I'm Chinese, the resulting image definitely exaggerates the differences.
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang3.jpg"/>
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/5/geoxiang3_caricature.jpg"/>
+	    <figcaption>Made in China Geoffrey</figcaption>
+	</figure>
+    </div>
+    <h2>Bells and Whistles: Smile Removal</h2>
+    <p>
+	The FEI dataset conveniently allowed us to compute the average neutral facial expression. Since the current image of myself is smiling, we can use that to wipe off my smile. We can achieve this with a direct warp with the average neutral expression. However, we can go further and cross dissolve with the average neutral expression (which just morphs the appearance). Combining the two both removes my smile and changes my appearance to be closer to Brazilian. Since the neutral expression generally involves no teeth and my original image has teeth, there will still be remnants of them in the morphed image. 
+    </p>
+    <div class="container">
+	<figure>
+	    <img src="assets/geoxiang3.jpg"/>
+	    <figcaption>Geoffrey</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/4/fei_average_im_neutral.jpg"/>
+	    <figcaption>Average Neutral Expression</figcaption>
+	</figure>
+    </div>
+    <div class="container">
+	<figure>
+	    <img src="assets/5/geoxiang3_neutral_shape.jpg"/>
+	    <figcaption>Shape Morph</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/5/geoxiang3_neutral_appearance.jpg"/>
+	    <figcaption>Appearance Morph</figcaption>
+	</figure>
+	<figure>
+	    <img src="assets/5/geoxiang3_neutral.jpg"/>
+	    <figcaption>Shape & Appearance Morph</figcaption>
+	</figure>
+    </div>
+</body>
+<style>
+    .container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+    }
+
+    figure {
+	display: table;
+	margin-left: 5px;
+	margin-right: 5px;
+    }
+
+    figcaption {
+	display: table-caption;
+	caption-side: bottom;
+	text-align: center;
+	font-size: 14px;
+    }
+
+    img {
+	max-height: 250px;
+	max-width: 250px;
+	border: 1px solid black;
+    }
+</style>
+</html>
